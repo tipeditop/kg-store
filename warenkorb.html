@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>KG STORE / Warenkorb</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+<style>
+body {
+  background-image: url('background.jpg');
+}
+</style>
+  <h1>Ihr warenkorb</h1>
+  <div class="link">
+    <a href="startseite.html">Weiter einkaufen</a>
+  </div>
+  <div id="cart-items"></div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const cart = JSON.parse(localStorage.getItem("warenkorb")) || [];
+    const container = document.getElementById("cart-items");
+    const totalContainer = document.createElement("div");
+    totalContainer.id = "cart-total";
+
+    if (cart.length === 0) {
+      container.innerHTML = "<p>Ihr Warenkorb ist leer.</p>";
+    } else {
+      let total = 0;
+      container.innerHTML = cart.map((item, index) => {
+        const preisZahl = parseFloat(item.price.replace("€", "").replace(",", "."));
+        total += preisZahl;
+
+        return `
+          <div class="product">
+            <img src="${item.img}" alt="${item.name}">
+            <h2>${item.name}</h2>
+            <p><strong>Preis: ${item.price}</strong></p>
+            <button onclick="removeFromCart(${index})">Entfernen</button>
+          </div>
+        `;
+      }).join("");
+
+      totalContainer.innerHTML = `<h3>Gesamtsumme: €${total.toFixed(2)}</h3>`;
+      container.appendChild(totalContainer);
+    }
+  });
+
+  function removeFromCart(index) {
+    let cart = JSON.parse(localStorage.getItem("warenkorb")) || [];
+    cart.splice(index, 1);
+    localStorage.setItem("warenkorb", JSON.stringify(cart));
+    location.reload();
+  }
+
+  function checkout() {
+    const cart = JSON.parse(localStorage.getItem("warenkorb")) || [];
+    if (cart.length === 0) {
+      alert("Ihr Warenkorb ist leer.");
+      return;
+    }
+
+    alert("Vielen Dank für Ihren Einkauf!");
+    localStorage.removeItem("warenkorb");
+    location.reload();
+  }
+</script>
+<div class="checkout">
+    <br>
+    <button onclick="checkout()">Jetzt kaufen</button>
+</div>
+</body>
+</html>
